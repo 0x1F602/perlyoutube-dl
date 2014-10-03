@@ -5,5 +5,11 @@ supported_version:
     day:      "29"
     release:  "02"
 executable_options:
-    - verbose:  0
+    verbose:            0
+    embed-thumbnail:    1
+    audio-format:       "mp3"
+    audio-quality:      7
+    write-info-json:    1
 tmpdir: "/tmp"
+audio_directory: "mp3"
+video_directory: "mp4"

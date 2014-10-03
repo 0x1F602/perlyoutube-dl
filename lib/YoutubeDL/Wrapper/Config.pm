@@ -17,9 +17,8 @@ has 'downloads' => (
 );
 
 has 'executable' => (
-    is => 'rw',
+    is => 'ro',
     default => 'youtube-dl',
-    lazy => 1,
 );
 
 has 'config_yaml' => (

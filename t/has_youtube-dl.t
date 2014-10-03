@@ -26,7 +26,9 @@ subtest do_we_support_this_youtubedl_version => sub {
 subtest can_we_read_a_config_file => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
     use Data::Dumper;
+    note "YoutubeDL::Wrapper object";
     note Dumper $ytw;
+    note "Config filename";
     note Dumper $ytw->config_filename;
     my $config = $ytw->config->config_yaml;
     ok(defined $config);
@@ -35,8 +37,8 @@ subtest can_we_read_a_config_file => sub {
 TODO: {
 subtest can_we_read_a_downloads_file => sub {
     plan skip_all => "TODO";
-    #my $ytw = YoutubeDL::Wrapper->new($test_config);
-    #my $results = $ytw->config->get_downloads;
+    my $ytw = YoutubeDL::Wrapper->new($test_config);
+    my $results = $ytw->config->get_downloads;
 };
 }
 
