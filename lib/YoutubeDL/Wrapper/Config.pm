@@ -2,25 +2,24 @@ package YoutubeDL::Wrapper::Config;
 use Moose;
 extends 'YoutubeDL::Wrapper';
 
+use YAML::XS qw/LoadFile/;
+
 has 'downloads' => (
     is => 'ro',
     builder => 'get_downloads',
+    lazy => 1,
 );
 
 has 'executable' => (
     is => 'rw',
     default => 'youtube-dl',
-);
-
-has 'config_filehandle' => (
-    is => 'ro',
-    builder => '_get_config_filehandle',
     lazy => 1,
 );
 
-has 'config_filename' => (
-    is => 'rw',
-    default => 'config.yml',
+has 'config_yaml' => (
+    is => 'ro',
+    builder => '_read_config_yaml',
+    lazy => 1,
 );
 
 has 'executable_version' => (
@@ -31,21 +30,26 @@ has 'executable_version' => (
 
 has 'supported_executable_version' => (
     is => 'ro',
-    default => sub {
-        return {
-            year => '2014',
-            month => '09',
-            day => '29',
-            release => '2',
-        };
-    }
+    builder => '_get_supported_executable_version',
+    lazy => 1,
 );
 
-sub _get_config_filehandle {
+sub _read_config_yaml {
     my ($self) = @_;
-# Find the file via its name and open it as a file handler
-    my $fn = $self->config_filename;
-    return open($fn);
+#    use Data::Dumper;
+#    warn Dumper $self;
+    #$self->set_config_filename('yellow.yml');
+    #my $cf = $self->config_filename;
+    #warn "Config $cf";
+    my $yaml = LoadFile($self->config_filename);
+#    use Data::Dumper;
+#    warn Dumper $yaml;
+    return $yaml;
+}
+
+sub _get_supported_executable_version {
+    my ($self) = @_;
+    return $self->config_yaml->{supported_version};
 }
 
 sub _get_executable_version {
@@ -66,5 +70,5 @@ sub get_downloads {
     return [];
 }
 
+no Moose;
 __PACKAGE__->meta->make_immutable;
-1;
