@@ -5,5 +5,13 @@ supported_version:
     day:      "29"
     release:  "02"
 executable_options:
-    - verbose:  0
+    embed-thumbnail:    ON
+    audio-format:       "mp3"
+    audio-quality:      7
+    write-info-json:    ON
+    simulate:           Off
+    extract-audio:      ON
 tmpdir: "/tmp"
+audio_directory: "mp3"
+video_directory: "mp4"
+download_filename: "./t/test_download.yml"

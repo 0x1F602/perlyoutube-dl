@@ -3,10 +3,15 @@ use Moose;
 use YoutubeDL::Wrapper::Config;
 use IPC::Open3::Simple;
 
+has 'executable' => (
+    is => 'ro',
+    default => 'youtube-dl',
+);
+
 has 'config_filename' => (
     is => 'rw',
-    default => 'config.yml',
     isa => 'Str',
+    default => 'config.yml',
     lazy => 1,
     writer => 'set_config_filename',
 );
@@ -19,17 +24,25 @@ has 'config' => (
 
 has 'executable_version' => (
     is => 'ro',
+    isa => 'HashRef',
     builder => '_get_executable_version',
+    lazy => 1,
+);
+
+has 'files_to_download' => (
+    is => 'ro',
+    isa => 'HashRef',
+    builder => '_get_files_to_download',
     lazy => 1,
 );
 
 sub _get_executable_version {
     my ($self) = @_;
     my $observed_version = {};
-    my $executable = $self->config->executable;
-    my $output = $self->run("$executable -v");
-    my @matches = $output->{stderr} =~ 
-        m/\[debug\] youtube-dl version (?<year>\d\d\d\d).(?<month>\d\d).(?<day>\d\d).(?<release>\d+)/;
+    my $executable = $self->executable;
+    my $output = $self->run(["--version"]);
+    my @matches = $output->{stdout} =~ 
+        m/(\d\d\d\d)\.(\d\d)\.(\d\d)\.(\d+)/;
     if (scalar @matches == 4) {
         $observed_version->{$_} = shift @matches for qw/year month day release/;
     }
@@ -44,10 +57,14 @@ sub _get_config {
 
 sub run {
     my ($self, $command) = @_;
+    $command = $command // [];
+    $command = [$self->executable, @{$command}];
+
     my $output = {
         stdout => '',
         stderr => '',
     };
+
     my $process = IPC::Open3::Simple->new(
         out => sub {
             my $line = shift;
@@ -58,8 +75,17 @@ sub run {
             $output->{stderr} .= "$line\n";
         }
     );
-    my  $retval = $process->run($command);
+
+    my $corrected = join(" ", @{$command});
+    my  $retval = $process->run($corrected);
     return $output;
+}
+
+sub _get_files_to_download {
+    my ($self, $batch_download_filename) = @_;
+    my $files = {};
+    $files = $self->config->downloads;
+    return $files;
 }
 
 no Moose;
