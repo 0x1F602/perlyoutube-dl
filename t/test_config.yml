@@ -1,0 +1,9 @@
+executable: "youtube-dl"
+supported_version: 
+    year:     "2014"
+    month:    "09"
+    day:      "29"
+    release:  "02"
+executable_options:
+    - verbose:  0
+tmpdir: "/tmp"

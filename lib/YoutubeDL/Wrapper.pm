@@ -23,13 +23,6 @@ has 'executable_version' => (
     lazy => 1,
 );
 
-
-#sub set_config_filename {
-#    my ($self, $fn) = @_;
-#    warn "Filename $fn";
-#    #$self->config_filename = $fn;
-#    return $fn;
-#}
 sub _get_executable_version {
     my ($self) = @_;
     my $observed_version = {};
@@ -45,7 +38,6 @@ sub _get_executable_version {
 
 sub _get_config {
     my ($self) = @_;
-    warn $self->config_filename;
     my $config = YoutubeDL::Wrapper::Config->new(config_filename => $self->config_filename);
     return $config;
 }
