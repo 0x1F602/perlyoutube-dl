@@ -82,10 +82,38 @@ sub run {
 }
 
 sub _get_files_to_download {
-    my ($self, $batch_download_filename) = @_;
+    my ($self) = @_;
     my $files = {};
     $files = $self->config->downloads;
     return $files;
+}
+
+sub _merge_options {
+    my ($self, $globals, $locals) = @_;
+    my $merged_options = {};
+    $merged_options = {
+        %{$globals},
+        %{$locals}
+    };
+    return $merged_options;
+}
+
+sub get_jobs {
+    my ($self) = @_;
+    my $global_executable_options = $self->config->global_executable_options;
+    my $jobs = $self->files_to_download; 
+    for my $url (keys %{$jobs}) {
+        # merge the job and global executable options
+        # always allow individual executable options
+        # to override the global defaults
+    }
+    return $jobs;
+}
+
+sub run_jobs {
+    my ($self, $jobs) = @_;
+    my $stats = {};
+    return $stats;
 }
 
 no Moose;

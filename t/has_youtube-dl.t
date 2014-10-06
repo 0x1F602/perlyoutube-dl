@@ -43,18 +43,43 @@ subtest can_we_read_a_downloads_file => sub {
 
 subtest can_we_see_executable_options => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
-    ok(defined $ytw->config->executable_options);
-    note Dumper $ytw->config->executable_options;
+    ok(defined $ytw->config->global_executable_options);
+    note Dumper $ytw->config->global_executable_options;
 };
 
 subtest can_we_run_executable_options => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
-    my $opts = $ytw->config->executable_options;
+    my $opts = $ytw->config->global_executable_options;
+    note "Looking at \$opts";
+    note Dumper $opts;
     my $url = "http://www.youtube.com/watch?v=Yl2w3ck1gbA";
-    push @{$opts}, $url;
-    my $output = $ytw->run($opts);
+    my $runnable_opts = [];
+    note Dumper $ytw->config->get_executable_options($opts);
+    push @{$runnable_opts}, $ytw->config->get_executable_options($opts);
+    my $output = $ytw->run($runnable_opts);
     note Dumper $output;
     ok(defined $output);
+};
+
+TODO: {
+    subtest can_we_merge_jobs => sub {
+
+    };
+}
+
+subtest can_we_load_jobs => sub {
+    my $ytw = YoutubeDL::Wrapper->new($test_config);
+    my $jobs = $ytw->get_jobs();
+    note Dumper $jobs;
+    is_deeply($jobs->{'http://www.youtube.com/watch?v=Yl2w3ck1gbA'}, {
+          'album' => 'vvinter rainbovv',
+          'artist' => 'vvinter rainbovv',
+          'comment' => 'ft. Caliix',
+          'song' => 'Departure',
+          'executable_options' => {},
+          'type' => 'mp3'
+    });
+    note Dumper $jobs;
 };
 
 done_testing();
