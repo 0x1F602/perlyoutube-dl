@@ -106,6 +106,9 @@ sub get_jobs {
         # merge the job and global executable options
         # always allow individual executable options
         # to override the global defaults
+        $jobs->{$url}->{executable_options} = 
+            $self->_merge_options($global_executable_options, 
+                $jobs->{$url}->{executable_options});
     }
     return $jobs;
 }

@@ -61,12 +61,6 @@ subtest can_we_run_executable_options => sub {
     ok(defined $output);
 };
 
-TODO: {
-    subtest can_we_merge_jobs => sub {
-
-    };
-}
-
 subtest can_we_load_jobs => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
     my $jobs = $ytw->get_jobs();
@@ -76,7 +70,14 @@ subtest can_we_load_jobs => sub {
           'artist' => 'vvinter rainbovv',
           'comment' => 'ft. Caliix',
           'song' => 'Departure',
-          'executable_options' => {},
+          'executable_options' => {
+                            'audio-quality' => 7,
+                            'audio-format' => 'mp3',
+                            'write-info-json' => 'ON',
+                            'simulate' => 'ON',
+                            'extract-audio' => 'ON',
+                            'embed-thumbnail' => 'ON'
+                           },
           'type' => 'mp3'
     });
     note Dumper $jobs;
