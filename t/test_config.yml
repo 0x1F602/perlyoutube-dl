@@ -6,10 +6,11 @@ supported_version:
     release:  "02"
 # global executable options
 executable_options:
+    audio-quality:      7
     write-info-json:    ON
     simulate:           ON
     # we handle embed-thumbnail via eyeD3, not default atomicparsley
-    embed-thumbnail:    ON
+    embed-thumbnail:    Off
 tmpdir: "/tmp"
 # organization purposes
 audio_directory: "mp3"

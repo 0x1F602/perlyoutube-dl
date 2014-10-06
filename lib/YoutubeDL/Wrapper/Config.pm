@@ -19,7 +19,7 @@ has 'download_filename' => (
 
 has 'downloads' => (
     is => 'ro',
-    builder => 'get_downloads',
+    builder => '_get_downloads',
     lazy => 1,
 );
 
@@ -41,16 +41,22 @@ has 'supported_executable_version' => (
     lazy => 1,
 );
 
-has executable_options => (
+has global_executable_options => (
     is => 'rw',
-    isa => 'ArrayRef',
-    builder => '_get_executable_options',
+    isa => 'HashRef',
+    builder => '_get_global_executable_options',
     lazy => 1,
 );
 
-sub _get_executable_options {
+sub _get_global_executable_options {
     my ($self) = @_;
-    my $opts = $self->config_yaml->{executable_options};
+    my $yaml = $self->config_yaml->{executable_options};
+    return $yaml;
+}
+
+sub get_executable_options {
+    my ($self, $yaml) = @_;
+    my $opts = $yaml;
     my $final_opts = [];
 
     for my $k (keys %{$opts}) {     
@@ -86,7 +92,7 @@ sub _get_supported_executable_version {
     return $self->config_yaml->{supported_version};
 }
 
-sub get_downloads {
+sub _get_downloads {
     my ($self) = @_;
     my $d = $self->download_yaml;
     return $d;
