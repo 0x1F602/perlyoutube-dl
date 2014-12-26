@@ -6,6 +6,8 @@ my $test_config = {
     config_filename => './t/test_config.yml',
 };
 
+my $test_url = "http://www.youtube.com/watch?v=Yl2w3ck1gbA";
+
 subtest does_youtubedl_start => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
     my $output = "";
@@ -52,7 +54,6 @@ subtest can_we_run_executable_options => sub {
     my $opts = $ytw->config->global_executable_options;
     note "Looking at \$opts";
     note Dumper $opts;
-    my $url = "http://www.youtube.com/watch?v=Yl2w3ck1gbA";
     my $runnable_opts = [];
     note Dumper $ytw->config->get_executable_options($opts);
     push @{$runnable_opts}, $ytw->config->get_executable_options($opts);
@@ -65,7 +66,7 @@ subtest can_we_load_jobs => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
     my $jobs = $ytw->get_jobs();
     note Dumper $jobs;
-    is_deeply($jobs->{'http://www.youtube.com/watch?v=Yl2w3ck1gbA'}, {
+    is_deeply($jobs->{$test_url}, {
           'album' => 'vvinter rainbovv',
           'artist' => 'vvinter rainbovv',
           'comment' => 'ft. Caliix',
