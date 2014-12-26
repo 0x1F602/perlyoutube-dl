@@ -84,4 +84,26 @@ subtest can_we_load_jobs => sub {
     note Dumper $jobs;
 };
 
+subtest can_we_translate_options => sub {
+    my $ytw = YoutubeDL::Wrapper->new($test_config);
+    my $jobs = $ytw->get_jobs();
+    my $config_exec_opts = $jobs->{$test_url}->{executable_options};
+    my $expected_cli_opts = [
+        '--audio-quality', '7', 
+        '--audio-format', 'mp3',
+        '--write-info-json',
+        '--simulate',
+        '--extract-audio',
+        '--embed-thumbnail'
+    ];
+    my $real_cli_opts = $ytw->_convert_options_to_cli($config_exec_opts);
+    use Data::Dumper;
+    warn Dumper $real_cli_opts;
+    is_deeply($real_cli_opts, $expected_cli_opts);
+};
+
+subtest can_we_execute_job => sub {
+    pass("TODO");
+};
+
 done_testing();

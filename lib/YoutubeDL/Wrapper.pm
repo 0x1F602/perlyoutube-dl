@@ -113,9 +113,50 @@ sub get_jobs {
     return $jobs;
 }
 
+sub _convert_options_to_cli {
+    my ($self, $exec_opts) = @_;
+
+    #my $boolean_types = [
+    #    'simulate',
+    #    'write-info-json',
+    #    'extract-audio',
+    #    'embed-thumbnail',
+    #];
+
+    #my $parameter_types = [
+    #    'audio-quality',
+    #    'audio-format',
+    #];
+
+    my @cli_options = ();
+
+    for my $option (keys %{$exec_opts}) {
+        if ($exec_opts->{$option} eq 'OFF') {
+            next;
+        }
+        elsif ($exec_opts->{$option} eq 'ON') {
+            push @cli_options, "--" . $option;
+        }
+        else {
+            if ($exec_opts->{$option} eq '' ||
+                not defined $exec_opts->{$option}) {
+                next; # in the future, this should be a custom exception
+            }
+
+            push @cli_options, "--" . $option;
+            push @cli_options, $exec_opts->{$option};
+        }
+    }
+    
+    return [@cli_options];
+}
+
 sub run_jobs {
     my ($self, $jobs) = @_;
     my $stats = {};
+    # Loop over jobs here
+    #    $jobs->{$url}->{cli_options} = 
+    #        $self->_convert_options_to_cli($jobs->{$url}->{executable_options});
     return $stats;
 }
 
