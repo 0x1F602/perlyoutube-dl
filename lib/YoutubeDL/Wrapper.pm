@@ -174,10 +174,10 @@ sub _convert_options_to_cli {
     for my $key ($exec_opts->Keys) {
         my $option = $exec_opts->FETCH($key);
 
-        if ($option eq 'OFF') {
+        if (uc($option) eq 'OFF') {
             next;
         }
-        elsif ($option eq 'ON') {
+        elsif (uc($option) eq 'ON') {
             push @cli_options, "--" . $key;
         }
         else {
