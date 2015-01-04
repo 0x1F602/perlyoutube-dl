@@ -1,0 +1,23 @@
+http://www.youtube.com/watch?v=w1-ob428M6g:
+    type: "mp3"
+    artist: "Ghostling"
+    album: "Ghostling"
+    comment: "Feat. $hine Brida"
+    song: "What's Real?"
+    genre: "Witch House"
+    executable_options:
+        extract-audio:      ON
+        audio-format:       "mp3"
+        write-info-json:    ON
+        embed-thumbnail:    ON
+http://www.youtube.com/watch?v=Yl2w3ck1gbA:
+    type: "mp3"
+    artist: "vvinter rainbovv"
+    album: "vvinter rainbovv"
+    comment: "ft. Caliix"
+    song: "Departure"
+    executable_options:
+        extract-audio:      ON
+        audio-format:       "mp3"
+        write-info-json:    ON
+        embed-thumbnail:    ON

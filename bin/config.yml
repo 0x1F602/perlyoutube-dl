@@ -1,0 +1,24 @@
+executable: "youtube-dl"
+supported_version: 
+    year:     "2014"
+    month:    "12"
+    day:      "16"
+    release:  "2"
+# global executable options
+executable_options:
+    audio-quality:      7
+    write-info-json:    ON
+    simulate:           Off
+    # we handle embed-thumbnail via eyeD3, not default atomicparsley
+    embed-thumbnail:    Off
+# organization purposes
+audio_directory: "mp3"
+video_directory: "mp4"
+# TODO any tags that I have a rule for,
+# will have an auto-tagging attempt
+# as long as they are undefined
+# example: qr/(?<artist>[^-]+-)/
+autotagging: ON 
+# overriden in the YoutubeDL::Wrapper
+download_filename: "./downloads.yml"
+max_jobs: 4
