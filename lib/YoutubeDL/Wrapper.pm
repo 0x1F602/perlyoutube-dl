@@ -2,7 +2,9 @@ package YoutubeDL::Wrapper 1.0;
 use Moose;
 use YoutubeDL::Wrapper::Config;
 use IPC::Open3::Simple;
-
+use Tie::IxHash;
+use Cwd;
+use Parallel::ForkManager;
 has 'executable' => (
     is => 'ro',
     default => 'youtube-dl',
@@ -77,6 +79,11 @@ sub run {
     );
 
     my $corrected = join(" ", @{$command});
+    use Data::Dumper;
+    warn "Inside run";
+    warn Dumper $corrected;
+    warn Dumper $command;
+    warn "After run point";
     my  $retval = $process->run($corrected);
     return $output;
 }
@@ -113,9 +120,73 @@ sub get_jobs {
     return $jobs;
 }
 
+=head2 _convert_options_to_cli
+
+Takes a Tie::IxHash object of executable options from config files and converts
+them into something that the run method can use.
+=cut
+
+sub _convert_options_to_cli {
+    my ($self, $exec_opts) = @_;
+
+    my @cli_options = ();
+
+    for my $key ($exec_opts->Keys) {
+        my $option = $exec_opts->FETCH($key);
+
+        if (uc($option) eq 'OFF') {
+            next;
+        }
+        elsif (uc($option) eq 'ON') {
+            push @cli_options, "--" . $key;
+        }
+        else {
+            if ($option eq '' ||
+                not defined $option) {
+                next; # in the future, this should be a custom exception
+            }
+
+            push @cli_options, "--" . $key;
+            push @cli_options, $option;
+        }
+    }
+    
+    return [@cli_options];
+}
+
+=head2 run_jobs
+
+Gets the list of jobs, converts their options to CLI ready options, executes each one with youtube-dl
+
+=cut
+
 sub run_jobs {
     my ($self, $jobs) = @_;
     my $stats = {};
+    my $old_working_directory = getcwd();
+    # Change directory to tempdir
+    my $tmpdir = $self->config->{config_yaml}->{tmpdir} // '.';
+        use Data::Dumper;
+    chdir $tmpdir;
+    # Loop over jobs here
+    my $pm = Parallel::ForkManager->new(2);
+    DOWNLOAD_LOOP:
+    for my $url (keys %{$jobs}) {
+        my $pid = $pm->start and next DOWNLOAD_LOOP;
+        warn Dumper $url;
+        my $cli_opts = $jobs->{$url}->{cli_options} = 
+            $self->_convert_options_to_cli($jobs->{$url}->{executable_options});
+        push @{$cli_opts}, $url;
+        warn "Printing cli_opts here";
+        warn Dumper $cli_opts;
+        warn "Done";
+        $stats->{$url} = $self->run($cli_opts);
+        $pm->finish;
+    }
+    $pm->wait_all_children;
+    chdir $old_working_directory;
+    warn "Stats";
+    warn Dumper $stats;
     return $stats;
 }
 

@@ -11,7 +11,6 @@ executable_options:
     simulate:           ON
     # we handle embed-thumbnail via eyeD3, not default atomicparsley
     embed-thumbnail:    Off
-tmpdir: "/tmp"
 # organization purposes
 audio_directory: "mp3"
 video_directory: "mp4"
@@ -22,8 +21,7 @@ video_directory: "mp4"
 autotagging: ON 
 # overriden in the YoutubeDL::Wrapper
 download_filename: "./t/test_download.yml"
-children: 4
-jobs_per_child: 1
+max_jobs: 4
 # avoiding captcha limiting?
 proxy_pool:
     - "" # use my plain connection
