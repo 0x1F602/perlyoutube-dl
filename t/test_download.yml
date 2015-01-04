@@ -9,7 +9,6 @@ http://www.youtube.com/watch?v=w1-ob428M6g:
         extract-audio:      ON
         audio-format:       "mp3"
         write-info-json:    ON
-        simulate:           ON
         embed-thumbnail:    ON
 http://www.youtube.com/watch?v=Yl2w3ck1gbA:
     type: "mp3"
@@ -21,5 +20,4 @@ http://www.youtube.com/watch?v=Yl2w3ck1gbA:
         extract-audio:      ON
         audio-format:       "mp3"
         write-info-json:    ON
-        simulate:           ON
         embed-thumbnail:    ON
