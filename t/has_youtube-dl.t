@@ -106,8 +106,14 @@ subtest can_we_execute_job => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
     my $jobs = $ytw->get_jobs();
     my $exec = $ytw->run_jobs($jobs);
-    warn Dumper $exec;
-    pass('TODO');
+
+    my ($youtube_link) = $test_url =~ m/v=([\w]+)$/g;
+
+    is($exec->{$test_url}->{stdout} =~ m/\[youtube\] $youtube_link: Downloading webpage/,           1);
+    is($exec->{$test_url}->{stdout} =~ m/\[youtube\] $youtube_link: Extracting video information/,  1);
+    is($exec->{$test_url}->{stdout} =~ m/\[youtube\] $youtube_link: Downloading DASH manifest/,     1);
+
+    is($exec->{$test_url}->{stderr}, '');
 };
 
 done_testing();
