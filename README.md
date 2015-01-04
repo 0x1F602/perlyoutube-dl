@@ -2,8 +2,6 @@ perlyoutube-dl
 ==============
 Version 1.0
 
-INCOMPLETE - Changes failing. Oops.
-
 Perl Wrapper for the youtube-dl executable
 
 # Installation
