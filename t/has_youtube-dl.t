@@ -103,7 +103,11 @@ subtest can_we_translate_options => sub {
 };
 
 subtest can_we_execute_job => sub {
-    pass("TODO");
+    my $ytw = YoutubeDL::Wrapper->new($test_config);
+    my $jobs = $ytw->get_jobs();
+    my $exec = $ytw->run_jobs($jobs);
+    warn Dumper $exec;
+    pass('TODO');
 };
 
 done_testing();

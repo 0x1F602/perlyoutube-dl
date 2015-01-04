@@ -148,8 +148,12 @@ sub run_jobs {
     my ($self, $jobs) = @_;
     my $stats = {};
     # Loop over jobs here
-    #    $jobs->{$url}->{cli_options} = 
-    #        $self->_convert_options_to_cli($jobs->{$url}->{executable_options});
+    for my $url (keys %{$jobs}) {
+        my $cli_opts = $jobs->{$url}->{cli_options} = 
+            $self->_convert_options_to_cli($jobs->{$url}->{executable_options});
+        push @{$cli_opts}, $url;
+        $stats->{$url} = $self->run($cli_opts);
+    }
     return $stats;
 }
 
