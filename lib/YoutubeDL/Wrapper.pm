@@ -38,6 +38,14 @@ has 'files_to_download' => (
     lazy => 1,
 );
 
+=head2 _get_executable_version
+
+Grabs the executable version of the program straight from youtube-dl
+
+It's generally used for checking if we support this version
+
+=cut
+
 sub _get_executable_version {
     my ($self) = @_;
     my $observed_version = {};
@@ -51,11 +59,24 @@ sub _get_executable_version {
     return $observed_version;
 }
 
+=head2 _get_config
+
+Uses YoutubeDL::Wrapper::Config combined with the config filename to assign the
+master config file in the Moose object
+
+=cut
+
 sub _get_config {
     my ($self) = @_;
     my $config = YoutubeDL::Wrapper::Config->new(config_filename => $self->config_filename);
     return $config;
 }
+
+=head2 run
+
+Runs a command on the shell with IPC::Open3. The command should be in the form of an array ref.
+
+=cut
 
 sub run {
     my ($self, $command) = @_;
@@ -88,6 +109,12 @@ sub run {
     return $output;
 }
 
+=head2 _get_files_to_download
+
+Gets the download file, which should be used for loading bulk lists of jobs.
+
+=cut
+
 sub _get_files_to_download {
     my ($self) = @_;
     my $files = {};
@@ -95,15 +122,35 @@ sub _get_files_to_download {
     return $files;
 }
 
+=head2 _merge_options 
+
+Merges config options from download files and master config files. Individual jobs will
+override the master config. Think of the master config as applying to ALL the individual jobs,
+just in case an individual job didn't assign anything.
+
+It creates and sorts a Tie::IxHash object for the executable options.
+
+=cut
+
 sub _merge_options {
     my ($self, $globals, $locals) = @_;
     my $merged_options = {};
+    $globals    = $globals  // {};
+    $locals     = $locals   // {};
     $merged_options = {
         %{$globals},
         %{$locals}
     };
-    return $merged_options;
+    my $tied_hash = Tie::IxHash->new(%{$merged_options});
+    $tied_hash->SortByKey();
+    return $tied_hash;
 }
+
+=head2 get_jobs
+
+Returns a hash containing all the jobs from the download file, complete with ready-to-go merged options with the master config.
+
+=cut
 
 sub get_jobs {
     my ($self) = @_;

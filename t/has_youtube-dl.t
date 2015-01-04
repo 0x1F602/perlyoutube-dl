@@ -6,6 +6,8 @@ my $test_config = {
     config_filename => './t/test_config.yml',
 };
 
+my $test_url = "http://www.youtube.com/watch?v=Yl2w3ck1gbA";
+
 subtest does_youtubedl_start => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
     my $output = "";
@@ -52,7 +54,6 @@ subtest can_we_run_executable_options => sub {
     my $opts = $ytw->config->global_executable_options;
     note "Looking at \$opts";
     note Dumper $opts;
-    my $url = "http://www.youtube.com/watch?v=Yl2w3ck1gbA";
     my $runnable_opts = [];
     note Dumper $ytw->config->get_executable_options($opts);
     push @{$runnable_opts}, $ytw->config->get_executable_options($opts);
@@ -65,22 +66,54 @@ subtest can_we_load_jobs => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
     my $jobs = $ytw->get_jobs();
     note Dumper $jobs;
-    is_deeply($jobs->{'http://www.youtube.com/watch?v=Yl2w3ck1gbA'}, {
+    my $sample_jobs = {
           'album' => 'vvinter rainbovv',
           'artist' => 'vvinter rainbovv',
           'comment' => 'ft. Caliix',
           'song' => 'Departure',
-          'executable_options' => {
+          'executable_options' => Tie::IxHash->new((
                             'audio-quality' => 7,
                             'audio-format' => 'mp3',
                             'write-info-json' => 'ON',
                             'simulate' => 'ON',
                             'extract-audio' => 'ON',
                             'embed-thumbnail' => 'ON'
-                           },
-          'type' => 'mp3'
-    });
+                           ))->SortByKey,
+          'type' => 'mp3',
+    };
+    note Dumper $sample_jobs;
+    is_deeply($jobs->{$test_url}, $sample_jobs);
     note Dumper $jobs;
+};
+
+subtest can_we_translate_options => sub {
+    my $ytw = YoutubeDL::Wrapper->new($test_config);
+    my $jobs = $ytw->get_jobs();
+    my $config_exec_opts = $jobs->{$test_url}->{executable_options};
+    my $expected_cli_opts = [
+        '--audio-format', 'mp3',
+        '--audio-quality', '7', 
+        '--embed-thumbnail',
+        '--extract-audio',
+        '--simulate',
+        '--write-info-json',
+    ];
+    my $real_cli_opts = $ytw->_convert_options_to_cli($config_exec_opts);
+    is_deeply($real_cli_opts, $expected_cli_opts);
+};
+
+subtest can_we_execute_job => sub {
+    my $ytw = YoutubeDL::Wrapper->new($test_config);
+    my $jobs = $ytw->get_jobs();
+    my $exec = $ytw->run_jobs($jobs);
+
+    my ($youtube_link) = $test_url =~ m/v=([\w]+)$/g;
+
+    is($exec->{$test_url}->{stdout} =~ m/\[youtube\] $youtube_link: Downloading webpage/,           1);
+    is($exec->{$test_url}->{stdout} =~ m/\[youtube\] $youtube_link: Extracting video information/,  1);
+    is($exec->{$test_url}->{stdout} =~ m/\[youtube\] $youtube_link: Downloading DASH manifest/,     1);
+
+    is($exec->{$test_url}->{stderr}, '');
 };
 
 done_testing();

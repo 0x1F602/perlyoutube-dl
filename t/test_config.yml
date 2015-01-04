@@ -1,9 +1,9 @@
 executable: "youtube-dl"
 supported_version: 
     year:     "2014"
-    month:    "09"
-    day:      "29"
-    release:  "02"
+    month:    "12"
+    day:      "16"
+    release:  "2"
 # global executable options
 executable_options:
     audio-quality:      7
