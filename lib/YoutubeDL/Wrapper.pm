@@ -130,6 +130,8 @@ It creates and sorts a Tie::IxHash object for the executable options.
 sub _merge_options {
     my ($self, $globals, $locals) = @_;
     my $merged_options = {};
+    $globals    = $globals  // {};
+    $locals     = $locals   // {};
     $merged_options = {
         %{$globals},
         %{$locals}
