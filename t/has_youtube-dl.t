@@ -66,21 +66,23 @@ subtest can_we_load_jobs => sub {
     my $ytw = YoutubeDL::Wrapper->new($test_config);
     my $jobs = $ytw->get_jobs();
     note Dumper $jobs;
-    is_deeply($jobs->{$test_url}, {
+    my $sample_jobs = {
           'album' => 'vvinter rainbovv',
           'artist' => 'vvinter rainbovv',
           'comment' => 'ft. Caliix',
           'song' => 'Departure',
-          'executable_options' => {
+          'executable_options' => Tie::IxHash->new((
                             'audio-quality' => 7,
                             'audio-format' => 'mp3',
                             'write-info-json' => 'ON',
                             'simulate' => 'ON',
                             'extract-audio' => 'ON',
                             'embed-thumbnail' => 'ON'
-                           },
-          'type' => 'mp3'
-    });
+                           ))->SortByKey,
+          'type' => 'mp3',
+    };
+    note Dumper $sample_jobs;
+    is_deeply($jobs->{$test_url}, $sample_jobs);
     note Dumper $jobs;
 };
 
@@ -89,16 +91,14 @@ subtest can_we_translate_options => sub {
     my $jobs = $ytw->get_jobs();
     my $config_exec_opts = $jobs->{$test_url}->{executable_options};
     my $expected_cli_opts = [
-        '--audio-quality', '7', 
         '--audio-format', 'mp3',
-        '--write-info-json',
-        '--simulate',
+        '--audio-quality', '7', 
+        '--embed-thumbnail',
         '--extract-audio',
-        '--embed-thumbnail'
+        '--simulate',
+        '--write-info-json',
     ];
     my $real_cli_opts = $ytw->_convert_options_to_cli($config_exec_opts);
-    use Data::Dumper;
-    warn Dumper $real_cli_opts;
     is_deeply($real_cli_opts, $expected_cli_opts);
 };
 

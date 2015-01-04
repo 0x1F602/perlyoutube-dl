@@ -2,6 +2,7 @@ package YoutubeDL::Wrapper 1.0;
 use Moose;
 use YoutubeDL::Wrapper::Config;
 use IPC::Open3::Simple;
+use Tie::IxHash;
 
 has 'executable' => (
     is => 'ro',
@@ -95,7 +96,9 @@ sub _merge_options {
         %{$globals},
         %{$locals}
     };
-    return $merged_options;
+    my $tied_hash = Tie::IxHash->new(%{$merged_options});
+    $tied_hash->SortByKey();
+    return $tied_hash;
 }
 
 sub get_jobs {
@@ -116,35 +119,25 @@ sub get_jobs {
 sub _convert_options_to_cli {
     my ($self, $exec_opts) = @_;
 
-    #my $boolean_types = [
-    #    'simulate',
-    #    'write-info-json',
-    #    'extract-audio',
-    #    'embed-thumbnail',
-    #];
-
-    #my $parameter_types = [
-    #    'audio-quality',
-    #    'audio-format',
-    #];
-
     my @cli_options = ();
 
-    for my $option (keys %{$exec_opts}) {
-        if ($exec_opts->{$option} eq 'OFF') {
+    for my $key ($exec_opts->Keys) {
+        my $option = $exec_opts->FETCH($key);
+
+        if ($option eq 'OFF') {
             next;
         }
-        elsif ($exec_opts->{$option} eq 'ON') {
-            push @cli_options, "--" . $option;
+        elsif ($option eq 'ON') {
+            push @cli_options, "--" . $key;
         }
         else {
-            if ($exec_opts->{$option} eq '' ||
-                not defined $exec_opts->{$option}) {
+            if ($option eq '' ||
+                not defined $option) {
                 next; # in the future, this should be a custom exception
             }
 
-            push @cli_options, "--" . $option;
-            push @cli_options, $exec_opts->{$option};
+            push @cli_options, "--" . $key;
+            push @cli_options, $option;
         }
     }
     
