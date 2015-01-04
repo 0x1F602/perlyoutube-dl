@@ -3,6 +3,7 @@ use Moose;
 use YoutubeDL::Wrapper::Config;
 use IPC::Open3::Simple;
 use Tie::IxHash;
+use Cwd;
 
 has 'executable' => (
     is => 'ro',
@@ -202,6 +203,10 @@ Gets the list of jobs, converts their options to CLI ready options, executes eac
 sub run_jobs {
     my ($self, $jobs) = @_;
     my $stats = {};
+    my $old_working_directory = getcwd();
+    # Change directory to tempdir
+    my $tmpdir = $self->config->{config_yaml}->{tmpdir};
+    chdir $tmpdir;
     # Loop over jobs here
     for my $url (keys %{$jobs}) {
         my $cli_opts = $jobs->{$url}->{cli_options} = 
@@ -209,6 +214,7 @@ sub run_jobs {
         push @{$cli_opts}, $url;
         $stats->{$url} = $self->run($cli_opts);
     }
+    chdir $old_working_directory;
     return $stats;
 }
 
